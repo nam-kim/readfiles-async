@@ -1,0 +1,20 @@
+{
+  "name": "readfiles-async",
+  "description": "Read all files in a directory",
+  "version": "0.0.1",
+  "author": {
+    "name": "Nam Kim",
+    "email": "nyk03x2@gmail.com"
+  },
+  "main": "index.js",
+  "keywords": [
+    "read",
+    "directory",
+    "files",
+    "async"
+  ],
+  "readme": "ERROR: No README data found!",
+  "dependencies": {
+    "lodash": "^3.10.1"
+  }
+}
