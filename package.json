@@ -16,5 +16,9 @@
   "readme": "ERROR: No README data found!",
   "dependencies": {
     "lodash": "^3.10.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nam-kim/readfiles-async.git"
   }
 }
