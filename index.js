@@ -4,7 +4,7 @@ var _ = require('lodash');
 
 module.exports = wrapper.readfiles = wrapper.readFiles = wrapper;
 
-function wrapper(pth, finalcb, filecb) {
+function wrapper(pth, filecb, finalcb) {
   if (!pth) { return; }
 
   var m;  // final callback function
