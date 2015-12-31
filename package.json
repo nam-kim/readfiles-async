@@ -1,7 +1,7 @@
 {
   "name": "readfiles-async",
   "description": "Read all files in a directory",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": {
     "name": "Nam Kim",
     "email": "nyk03x2@gmail.com"
@@ -13,12 +13,12 @@
     "files",
     "async"
   ],
-  "readme": "ERROR: No README data found!",
   "dependencies": {
     "lodash": "^3.10.1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nam-kim/readfiles-async.git"
-  }
+  },
+  "readme": "ERROR: No README data found!"
 }
