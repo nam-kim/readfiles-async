@@ -28,7 +28,7 @@ function wrapper(pth, filecb, finalcb) {
     o = filecb;
   }
 
-  n = function(tracker, filesArray, fileName, filePath, stat) {
+  n = function(tracker, fileName, filePath, stat) {
     if(tracker.halt === true) { return; }
     o(fileName, filePath, stat);
   };
@@ -84,7 +84,7 @@ function readFiles(dir, finalcb, filecb, filesArray, tracker) {
             path: filePath,
             stat: stat
           });
-          filecb(tracker, filesArray, file, filePath, stat);
+          filecb(tracker, file, filePath, stat);
         }
 
         if(i === files.length) {
