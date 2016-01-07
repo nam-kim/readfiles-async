@@ -1,6 +1,5 @@
 var path = require('path');
 var fs = require('fs');
-var _ = require('lodash');
 
 module.exports = wrapper.readfiles = wrapper.readFiles = wrapper;
 
@@ -46,12 +45,41 @@ function checkRemaining(tracker, finalcb, filesArray) {
   }
 }
 
+function loop(i, files, dir, finalcb, filecb, filesArray, tracker) {
+  var filePath = path.join(dir, files[i]);
+
+  fs.stat(filePath, function(err, stat) {
+    if(err) {
+      tracker.halt = true;
+      finalcb(err);
+      return;
+    }
+
+    if(stat.isDirectory()) {
+      tracker.dirs++;
+      readFiles(filePath, finalcb, filecb, filesArray, tracker);
+    } else if (stat.isFile()) {
+      filesArray.push({
+        name: files[i],
+        path: filePath,
+        stat: stat
+      });
+      filecb(tracker, files[i], filePath, stat);
+    }
+
+    if(i === (files.length - 1)) {
+      checkRemaining(tracker, finalcb, filesArray);
+    } else {
+      i++;
+      loop(i, files, dir, finalcb, filecb, filesArray, tracker);
+    }
+  });
+}
+
 function readFiles(dir, finalcb, filecb, filesArray, tracker) {
   if(tracker.halt === true) { return; }
 
   fs.readdir(dir, function(err, files) {
-    var i;
-
     if(err) {
       tracker.halt = true;
       finalcb(err);
@@ -60,38 +88,9 @@ function readFiles(dir, finalcb, filecb, filesArray, tracker) {
 
     if(files.length < 1) {
       checkRemaining(tracker, finalcb, filesArray);
+      return;
     }
 
-    i = 1;
-
-    _.forEach(files, function(file) {
-
-      var filePath = path.join(dir, file);
-
-      fs.stat(filePath, function(_err, stat) {
-        if(_err) {
-          tracker.halt = true;
-          finalcb(_err);
-          return;
-        }
-
-        if(stat.isDirectory()) {
-          tracker.dirs++;
-          readFiles(filePath, finalcb, filecb, filesArray, tracker);
-        } else if (stat.isFile()) {
-          filesArray.push({
-            name: file,
-            path: filePath,
-            stat: stat
-          });
-          filecb(tracker, file, filePath, stat);
-        }
-
-        if(i === files.length) {
-          checkRemaining(tracker, finalcb, filesArray);
-        }
-        i++;
-      });
-    });
+    loop(0, files, dir, finalcb, filecb, filesArray, tracker);
   });
-};
+}
