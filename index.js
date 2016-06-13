@@ -13,23 +13,23 @@ function wrapper(pth, filecb, finalcb) {
   var tr = { dirs: 1 };  // tracker object for readFiles function
 
   m = function(err, filesArray) {
-    if(err) {
+    if (err) {
       return err;
     }
     return filesArray;
   }
 
-  if(typeof finalcb === 'function') {
+  if (typeof finalcb === 'function') {
     m = finalcb;
   }
 
-  if(typeof filecb === 'function') {
+  if (typeof filecb === 'function') {
     o = filecb;
   }
 
   n = function(tracker, fileName, filePath, stat) {
-    if(tracker.halt === true) { return; }
-    o(fileName, filePath, stat);
+    if (tracker.halt === true) { return; }
+    return o(fileName, filePath, stat);
   };
 
   pth = path.resolve(pth);
@@ -40,7 +40,7 @@ function wrapper(pth, filecb, finalcb) {
 
 function checkRemaining(tracker, finalcb, filesArray) {
   tracker.dirs--;
-  if(tracker.dirs === 0) {
+  if (tracker.dirs === 0) {
     finalcb(null, filesArray);
   }
 }
@@ -49,13 +49,13 @@ function loop(i, files, dir, finalcb, filecb, filesArray, tracker) {
   var filePath = path.join(dir, files[i]);
 
   fs.stat(filePath, function(err, stat) {
-    if(err) {
+    if (err) {
       tracker.halt = true;
       finalcb(err);
       return;
     }
 
-    if(stat.isDirectory()) {
+    if (stat.isDirectory()) {
       tracker.dirs++;
       readFiles(filePath, finalcb, filecb, filesArray, tracker);
     } else if (stat.isFile()) {
@@ -64,10 +64,14 @@ function loop(i, files, dir, finalcb, filecb, filesArray, tracker) {
         path: filePath,
         stat: stat
       });
-      filecb(tracker, files[i], filePath, stat);
+      if (filecb(tracker, files[i], filePath, stat) === false) {
+        tracker.halt = true;
+        finalcb(null, filesArray);
+        return;
+      }
     }
 
-    if(i === (files.length - 1)) {
+    if (i === (files.length - 1)) {
       checkRemaining(tracker, finalcb, filesArray);
     } else {
       i++;
@@ -77,16 +81,16 @@ function loop(i, files, dir, finalcb, filecb, filesArray, tracker) {
 }
 
 function readFiles(dir, finalcb, filecb, filesArray, tracker) {
-  if(tracker.halt === true) { return; }
+  if (tracker.halt === true) { return; }
 
   fs.readdir(dir, function(err, files) {
-    if(err) {
+    if (err) {
       tracker.halt = true;
       finalcb(err);
       return;
     }
 
-    if(files.length < 1) {
+    if (files.length < 1) {
       checkRemaining(tracker, finalcb, filesArray);
       return;
     }
